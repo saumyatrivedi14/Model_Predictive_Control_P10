@@ -7,7 +7,7 @@ using CppAD::AD;
 
 // TODO: Set the timestep length and duration
 size_t N = 10;
-double dt = 0.05;
+double dt = 0.1;
 
 // This value assumes the model presented in the classroom is used.
 //
@@ -37,13 +37,14 @@ size_t delta_start = epsi_start + N;
 size_t a_start = delta_start + N - 1;
 
 //Weights to each part of cost function
-static int cte_w = 1000;
-static int epsi_w = 1000;
+static int cte_w = 2000;
+static int epsi_w = 2000;
 static int v_w = 1;
+static int st_v_w = 200
 static int delta_w = 10;
 static int a_w = 10;
 static int diff_delta_w = 100;
-static int diff_a_w = 100;
+static int diff_a_w = 50;
 
 class FG_eval {
  public:
@@ -70,6 +71,8 @@ class FG_eval {
 			if (i < N-1){
 				fg[0] += delta_w * CppAD::pow(vars[delta_start+i],2);
 				fg[0] += a_w * CppAD::pow(vars[a_start+i],2);
+				 // This is to increase speed when straight and reduce when turning
+                fg[0] += st_v_w * CppAD::pow((vars[v_start+i]*vars[delta_start+i]),2);
 				
 				// penalizing change in control inputs
 				if (i < N-2){
@@ -106,7 +109,7 @@ class FG_eval {
 		  
 			// previous timstep states
 			AD<double> x0 = vars[x_start + t - 1];
-			AD<double> y0 = vars[y_start + t - 1];
+			AD<double> y0 = vars[y_start + t - 1];cd
 			AD<double> psi0 = vars[psi_start + t - 1];
 			AD<double> v0 = vars[v_start + t - 1];
 			AD<double> cte0 = vars[cte_start + t - 1];
