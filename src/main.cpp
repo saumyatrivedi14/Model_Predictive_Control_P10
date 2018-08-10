@@ -92,15 +92,15 @@ int main() {
           double psi = j[1]["psi"];
           double v = j[1]["speed"];
 		  double delta = j[1]["steering_angle"];
-		  double a = j[1]["throttle"];
-		  
-		  //Transform Map CS to car CS
+          double a = j[1]["throttle"];
+
+          //Transform Map CS to car CS
           for (unsigned int i=0; i<ptsx.size(); i++){
                 double x_shift = ptsx[i] - px;
                 double y_shift = ptsy[i] - py;
                 ptsx[i] = x_shift * cos(-psi) - y_shift * sin(-psi);
                 ptsy[i] = x_shift * sin(-psi) + y_shift * cos(-psi);
-          }
+			}
 
           double* ptrx = &ptsx[0];
           Eigen::Map<Eigen::VectorXd> ptsx_car(ptrx, 6);
@@ -110,59 +110,60 @@ int main() {
 
           /*
           * Calculate steering angle and throttle using MPC.
-		  * Considering simulator latency of 100 ms, based on this next states are predicted
-		  */
-		  
-		  // Fitting a polynomial to the above calculated x & y co-ordinates
-		  auto coeffs = polyfit(ptsx_car, ptsy_car, 3);
-		  
-		  // To Calculate CTE, 
-		  // x & y should be kept zero as points are already tranformed to car CS
-		  // Otherwise 'y' would be subtracted from polyeval value
-		  double cte = polyeval(coeffs, 0);
-		  
-		  // For orientation error, as x = 0 for car CS, only coeffs[1] will be considered.
-		  double epsi = -atan(coeffs[1]);
-		  
-		  // Predicting states after latency
-		  double latency = 0.1;
-		  
+          * Considering simulator latency of 100 ms, based on this next states are predicted
+          */
+
+
+          // Fitting a polynomial to the above calculated x & y co-ordinates
+          auto coeffs = polyfit(ptsx_car, ptsy_car, 3);
+
+          // To Calculate CTE,
+          // x & y should be kept zero as points are already tranformed to car CS
+          // Otherwise 'y' would be subtracted from polyeval value
+          double cte = polyeval(coeffs, 0);
+
+          // For orientation error, as x = 0 for car CS, only coeffs[1] will be considered.
+          double epsi = -atan(coeffs[1]);
+
+          // Predicting states after latency
+          double latency = 0.1;
+
 		  double px_pred = 0.0 + v*latency; // psi is zero hence cos(0) is ignored
-		  double py_pred = 0.0; // psi is zero hence v*sin(0)*latency = 0
-		  double psi_pred = 0.0 + v * (-delta/Lf) * latency;
-		  double v_pred = v + a*latency;
-		  double cte_pred = cte + v*sin(epsi)*latency;
-		  double epsi_pred = epsi + v*(-delta/Lf) * latency;
-		  
-		  // Pushing all states to a vector to feed MPC::Solve() function
-		  Eigen::VectorXd curr_state(6);
-		  curr_state << px_pred, py_pred, psi_pred, v_pred, cte_pred, epsi_pred;
-		  
-		  // Using MPC::Solve() to find steer_Value & throttle_value
-		  vector<double> optimal_output;
-		  optimal_output = mpc.Solve(curr_state, coeffs);
-		  
-		  // Steering value must be divided by deg2rad(25) to normilize it		  
+          double py_pred = 0.0; // psi is zero hence v*sin(0)*latency = 0
+          double psi_pred = 0.0 + v * (-delta/Lf) * latency;
+          double v_pred = v + a*latency;
+          double cte_pred = cte + v*sin(epsi)*latency;
+          double epsi_pred = epsi + v*(-delta/Lf) * latency;
+
+          // Pushing all states to a vector to feed MPC::Solve() function
+          Eigen::VectorXd curr_state(6);
+          curr_state << px_pred, py_pred, psi_pred, v_pred, cte_pred, epsi_pred;
+
+          // Using MPC::Solve() to find steer_Value & throttle_value
+          vector<double> optimal_output;
+          optimal_output = mpc.Solve(curr_state, coeffs);
+
+          // Steering value must be divided by deg2rad(25) to normilize it
           double steer_value = optimal_output[0] / (deg2rad(25)*Lf);
           double throttle_value = optimal_output[1];
 
           json msgJson;
-          
-		  msgJson["steering_angle"] = steer_value;
+
+          msgJson["steering_angle"] = steer_value;
           msgJson["throttle"] = throttle_value;
 
-          //Display the MPC predicted trajectory 
+          //Display the MPC predicted trajectory
           vector<double> mpc_x_vals = {curr_state[0]};
           vector<double> mpc_y_vals = {curr_state[1]};
-		  
-		  for (unsigned int i=2; i<optimal_output.size(); i++){
-			if((i%2) == 0){
-				mpc_x_vals.push_back(optimal_output[i]);
+
+          for (unsigned int i=2; i<optimal_output.size(); i++){
+                if((i%2) == 0){
+                    mpc_x_vals.push_back(optimal_output[i]);
+				}
+                else{
+                    mpc_y_vals.push_back(optimal_output[i]);
+                }
 			}
-			else{
-				mpc_y_vals.push_back(optimal_output[i]);
-			}
-		  }
 
           //.. add (x,y) points to list here, points are in reference to the vehicle's coordinate system
           // the points in the simulator are connected by a Green line
@@ -173,18 +174,16 @@ int main() {
           //Display the waypoints/reference line
           vector<double> next_x_vals;
           vector<double> next_y_vals;
-		  
-		  for (unsigned int i=0; i<50; i+=3){
-			next_x_vals.push_back(i);
-			next_y_vals.push_back(polyeval(coeffs, i));
-		  }
 
+          for (unsigned int i=0; i<50; i+=3){
+                next_x_vals.push_back(i);
+                next_y_vals.push_back(polyeval(coeffs,i));
+			}
           //.. add (x,y) points to list here, points are in reference to the vehicle's coordinate system
           // the points in the simulator are connected by a Yellow line
 
           msgJson["next_x"] = next_x_vals;
           msgJson["next_y"] = next_y_vals;
-		  
 
           auto msg = "42[\"steer\"," + msgJson.dump() + "]";
           std::cout << msg << std::endl;
@@ -200,11 +199,12 @@ int main() {
           this_thread::sleep_for(chrono::milliseconds(100));
           ws.send(msg.data(), msg.length(), uWS::OpCode::TEXT);
         }
-      } else {
+    } 
+	else {
         // Manual driving
         std::string msg = "42[\"manual\",{}]";
         ws.send(msg.data(), msg.length(), uWS::OpCode::TEXT);
-      }
+	}
     }
   });
 
