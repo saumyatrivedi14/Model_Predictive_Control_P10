@@ -4,7 +4,9 @@
 [image1]: ./media/global_kinematic_model.JPG "Kinematic Model"
 [image2]: ./media/states.JPG "State Vector"
 [image3]: ./media/controller_model.JPG "Controller Model"
-[image4]: ./media/constraint_equations.JPG "Constraints"
+[image4]: ./media/actuator_constraints.JPG "Actuator Constraints"
+[image5]: ./media/state_constraints.JPG "State Constraints"
+[image6]: ./media/MPC.JPG "Overall MPC"
 
 
 
@@ -44,6 +46,10 @@ These equations are the one which model should follow while solving outputs, the
 
 ![alt text][image4]
 
+The state constraints are basically the error between the prediction and actual based on vehicle model, which needs to be zero, as shown below.
+
+![alt text][image5]
+
 ### Cost Function
 These is the important part of solver, because the optimizer tries to find the optimal values for the actuators by minimizing the cost function. The cost function consists of all the error terms which the optimizer reduces, hence it consists of postion erros, orientation error, actuator error and many more terms can be added to further improve the performance. Here, 6 types of squared sum error terms are considered:
 
@@ -54,7 +60,9 @@ These is the important part of solver, because the optimizer tries to find the o
 5. Speed Error
 6. Minimizing Speed wrt Steering and vice versa
 
-All these error terms have weights associated with it to tune it for smoother performance of vehicle.
+All these error terms have weights associated with it to tune it for smoother performance of vehicle. The overall MPC controller schematic looks something as shown below.
+
+![alt text][image6]
 
 ## Time-step Length and Duration
 ---
