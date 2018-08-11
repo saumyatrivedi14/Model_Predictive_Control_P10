@@ -4,7 +4,7 @@
 ---
 This repository contains the implementation of and MPC controller for Udacity SDCND MPC Project. The objective of this project is to make a car move around a track in a simulator, which sends telemetry and track waypoint data via websocket, the controller sends actuator commands (steering and acceleration) back to the simulator. The model is robust to 100ms latency.
 
-The project details are mentioned in [Reflection](./Reflection.md) and the first attempt video is linked [here]().
+The project details are mentioned in [Reflection](./Reflection.md).
 
 IPOPT and CPPAD libraries are used to calculate an optimal trajectory and its associated actuation commands in order to minimize error with a third-degree polynomial fit to the given waypoints. The optimization considers only a short duration's worth of waypoints, and produces a trajectory for that duration based upon a kinematic vehicle model and a cost function based on 8 types of errors discussed in detail in reflection. Most of the weight out of these error terms is on the vehicle's cross-track error (roughly the distance from the track waypoints) and orientation angle error to get a better output.
 
