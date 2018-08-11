@@ -1,10 +1,10 @@
 # Reflection of the Project
 ---
 [//]: # (Image References)
-[image1]: ./media/global_kinematic_model.JPEG "Kinematic Model"
-[image2]: ./media/states.JPEG "State Vector"
-[image3]: ./media/controller_model.JPEG "Controller Model"
-[image4]: ./media/constraint_equations.JPEG "Constraints"
+[image1]: ./media/global_kinematic_model.JPG "Kinematic Model"
+[image2]: ./media/states.JPG "State Vector"
+[image3]: ./media/controller_model.JPG "Controller Model"
+[image4]: ./media/constraint_equations.JPG "Constraints"
 
 
 
