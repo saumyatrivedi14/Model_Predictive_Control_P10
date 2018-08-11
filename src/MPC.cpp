@@ -22,7 +22,7 @@ double dt = 0.05;
 const double Lf = 2.67;
 
 // Set reference speed
-double ref_v = 50;
+double ref_v = 40;
 
 // The solver takes all the state variables and actuator
 // variables in a singular vector. Thus, we should to establish
@@ -38,13 +38,13 @@ size_t a_start = delta_start + N - 1;
 
 
 //Weights to each part of cost function
-static int cte_w = 3000;
-static int epsi_w = 3000;
+static int cte_w = 4000;
+static int epsi_w = 4000;
 static int v_w = 1;
-static int st_v_w = 200;
+static int st_v_w = 500;
 static int delta_w = 100;
 static int a_w = 50;
-static int diff_delta_w = 100;
+static int diff_delta_w = 200;
 static int diff_a_w = 50;
 
 class FG_eval {
@@ -119,10 +119,7 @@ class FG_eval {
                 // curent actuations
                 AD<double> delta0 = vars[delta_start + t - 1];
                 AD<double> a0 = vars[a_start + t - 1];
-                if (t > 1){
-                        delta0 = vars[delta_start + t - 2];
-                        a0 = vars[a_start + t - 2];
-                }
+                
                 // reference trajectory and heading angle
                 AD<double> f0 = coeffs[0] + coeffs[1] * x0 + coeffs[2] * pow(x0, 2) + coeffs[3] * pow(x0, 3);
                 AD<double> psi_ref = CppAD::atan(coeffs[1] + 2*coeffs[2]*x0 + 3*coeffs[3]*pow(x0,2));
