@@ -75,7 +75,7 @@ N       dt        Effect
 10      0.05      Vehicle oscillations were lowered but on turns vehicle is late to predict
 8       0.05      Oscillations were lowered even  more but it affected turning of vehicle even further giving a late braking effect.
 ```
-With N = 8 and dt = 0.05, the vehicle is able to complete the track without going off track at reference speed of 40, but at higher speeds, its not able to handle turns very well. It needs further tuning! :(
+With N = 8 and dt = 0.05, the vehicle is able to complete the track without going off track at reference speed of 40 mph, but at higher speeds, its not able to handle turns very well. It needs further tuning! :(
 
 ## Polynomial fitting and Pre-processing
 ---
