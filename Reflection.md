@@ -75,3 +75,4 @@ The reference waypoints of the vehicle received from the simulator are in map co
 
 ## MPC with Latency
 ---
+There were two types of latency observed while running simulation, one was manual latency of 100ms introduced and the other was when Ubuntu Virtual Machine was communicating with the simulator running on windows. For first one, the states were updated based on the Global Kinematic Model to predict the states after the latency (implemented in main.cpp), whereas for the second the actuation was delayed by one time-step (implemented in MPC.cpp).
